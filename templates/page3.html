@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>테스트 페이지</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css?family=Gamja+Flower&display=swap&subset=korean" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Poor+Story&display=swap&subset=korean" rel="stylesheet">
+
+    <script>
+        other = new Array()
+        all_word = new Array()
+        all_meaning = new Array()
+
+
+        other = ["뜻1","뜻2","뜻3","뜻4","뜻5","뜻6","뜻7","뜻8","뜻9"]
+        listing()
+
+        function listing(){
+
+            $.ajax({
+                type: "GET",
+                url: "/get_data",
+                data: {},
+                success: function(response){
+
+                    let user_data = response['user_data'];
+                    all_word = new Array();
+                    all_meaning = new Array();
+                    all_cnt = new Array();
+                    all_err = new Array();
+
+                    <!--모든 단어를 두개의 리스트에 푸시-->
+                    for (let i = 0; i < user_data.length; i++) {
+                        word = user_data[i]['word']
+                        meaning = user_data[i]['meaning']
+                        total = user_data[i]['total_cnt']
+                        err = user_data[i]['err_cnt']
+                        all_word.push(word)
+                        all_meaning.push(meaning)
+                        all_cnt.push(total)
+                        all_err.push(err)
+                    }
+
+                   console.log( all_word)
+                   set_test(all_word, all_meaning , all_cnt, all_err)
+                }
+            })
+        }
+
+        function set_test(all_word, all_meaning,all_cnt, all_err){
+
+            ran1 = Math.floor(Math.random()*all_word.length)
+            ran2 = Math.floor(Math.random()*all_meaning.length)
+            all = String(all_word[ran1] + "\n\n" + all_meaning[ran2])
+            $('#wordinput').text(all)
+
+            console.log(ran1)
+            console.log(ran2)
+
+            if(ran1==ran2){
+                setTimeout("get_result1(all_word[ran1],all_meaning[ran2],ran1, ran2 , all_cnt, all_err)",5000)
+            }
+            else{
+                setTimeout("get_result2(all_word[ran1],all_meaning[ran2],ran1, ran2 , all_cnt, all_err)",5000)
+            }
+        }
+
+
+        function get_result1(word,meaning, ran1, ran2 , all_cnt, all_err){
+            $.ajax({
+                type: "POST",
+                url: "/get_result1",
+                data: {word:word, meaning:meaning},
+                success: function(response){
+                    <!--이걸 정답률로 주는것도 좋을거같아.-->
+                    let result = response['result'];
+                    if(result==1){
+                        alert("실패!")
+                        if (ran1<=ran2){
+                          setTimeout("location.reload()",1000)
+                        }
+                        else{
+                            make_button()
+                        }
+                    }
+                    else if(result==0){
+                        alert("성공")
+                        if (ran1<=ran2){
+                          setTimeout("location.reload()",1000)
+                        }
+                        else{
+                            make_button()
+                        }
+                    }
+                }
+             })
+        }
+
+        function get_result2(word,meaning, ran1, ran2 , all_cnt, all_err){
+            <!--   apple != 사과 . 사용자 겨과가서 (엑셀 max 분석한 결과) x라는 결과를 얻어오면 성공-->
+
+
+            $.ajax({
+                type: "POST",
+                url: "/get_result2",
+                data: {word:word, meaning:meaning},
+                success: function(response){
+                    let result = response['result'];
+                    if(result==1){
+                        alert("실패!")
+                        if (ran1<=ran2){
+                          setTimeout("location.reload()",1000)
+                        }
+                        else{
+                            make_button()
+                        }
+                    }
+                    else if(result==0){
+                        alert("성공")
+                        if (ran1<=ran2){
+                          setTimeout("location.reload()",1000)
+                        }
+                        else{
+                            make_button()
+                        }
+                    }
+                }
+             })
+        }
+
+
+
+
+
+    function make_button(){
+        let temp_html = '<button type="button" class="btn" style="text-align:center" onclick="go_final()">결과보기</button>'
+        $('#btn_area').append(temp_html)
+    }
+    function go_final(){
+        location.href="/page4"
+    }
+
+
+
+
+    </script>
+
+
+    <style type="text/css">
+            body { text-align: center;
+            }
+            .jb-wrap {
+				width: 55%;
+				margin: 0px auto;
+				position: relative;
+			}
+			.jb-wrap img {
+				width: 50%;
+				vertical-align: middle;
+			}
+			.jb-text {
+				position: absolute;
+				top: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			.jb-text-table {
+				display: table;
+				width: 100%;
+				height: 100%;
+			}
+			.jb-text-table-row {
+				display: table-row;
+			}
+			.jb-text-table-cell {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.jb-text p {
+				margin: 0px 40px;
+				padding: 10px;
+				color: #ffffff;
+				font-size:50px;
+				text-align: center;
+			}
+    </style>
+</head>
+
+<body>
+
+
+<div class="jb-wrap">
+    <div class="jb-image"><img src="static/black.png" alt=""></div>
+    <div class="jb-text">
+        <div class="jb-text-table">
+            <div class="jb-text-table-row">
+                <div class="jb-text-table-cell" id="wordinput" style="color:white; font-size:50px">
+<!--                    <p>HELLO</p>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top:5%; width:100%;" >
+
+<div id="ch1" style="border: 1px solid gold; float: left; width: 20%; height: 20%; padding:10px; margin-left:0%">
+    <!--  O가 7Hz  -->
+    <img style="width:100%" src="static/7.gif" alt=""><br>
+    O
+</div>
+<div id="ch3" style="border: 1px solid blue; float: left; width: 20%; padding:10px; margin-left:60%">
+        <!--  X가 17Hz  -->
+    <img style="width:100%" src="static/17.gif" alt=""><br>
+
+X
+</div>
+</div>
+
+<div id="btn_area">
+
+</div>
+
+
+</body>
+</html>

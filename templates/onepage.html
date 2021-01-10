@@ -1,0 +1,164 @@
+<html>
+<head>
+    <title>메인페이지</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- 부트스트랩을 사용한다  -->
+    <link href="https://fonts.googleapis.com/css?family=Stylish&display=swap" rel="stylesheet">
+    <!-- 폰트가져옴 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+
+    <style>
+
+		* {
+			font-family: 'Stylish', sans-serif;
+		}
+
+		span{
+			font-size: 20px;
+		}
+
+		p{
+			font-size: 40px;
+		}
+
+		p4{
+			font-size: 25px;
+			color: lightgrey;
+		}
+
+		.b{
+			border: 0px;
+		}
+
+		.class1 {
+			width: 600px;
+			height: 50px;
+			margin: 450px auto 0 auto;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+
+		table{
+			border-collapse: collapse;
+		}
+
+		.table-bordered th {
+			border: 1px solid white;
+		}
+
+		.table-bordered td{
+			border: 1px solid white;
+			border-bottom-color: lightgray;
+		}
+
+
+    </style>
+
+    <script type="text/javascript">
+
+		function init(){
+
+			$('#name').val("");
+			$('#word').val("");
+			$('#meaning').val("");
+			$('#name').focus();
+			return;
+		}
+
+		function make_table(){
+			let name = $('#name').val();
+			let word = $('#word').val();
+			let meaning = $('#meaning').val();
+
+			$.ajax({
+              type: "POST",
+              url: "/order",
+              data: {
+                name:name,
+                word:word,
+                meaning:meaning,
+              },
+              success: function(response){
+              console.log(response)
+              }
+              })
+
+			let temp_html = '<tr><td>' + word + '</td>+<td>' + meaning + '</td>+</tr>';
+			$('#table_body').append(temp_html);
+		}
+
+		function ccclick(){
+
+		     alert('입력완료!!');
+			 make_table();
+		     init();
+			 return;
+		}
+
+		function go_next(){
+		    location.href="/page3"
+		}
+
+    </script>
+</head>
+
+<body>
+<div class="class1">
+    <div style="font-size:50px"> 나만의 영어 암기장</div>
+    <div class="card b">
+
+
+        <div class="card-body">
+            <p class="card-text comment"></p>
+
+            <div style="text-align:center; margin-bottom:50%">
+                <button type="button" class="btn" onclick="go_next()"> 테스트 시작 ⇒⇒⇒
+                </button>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" >영단어</span>
+                </div>
+                <input type="text" style="ime-mode:disabled;" id="word" class="form-control" placeholder="영단어를 입력하세요" aria-label="Useraddr"
+                       aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">뜻</span>
+                </div>
+                <input type="text" id="meaning" class="form-control" placeholder="단어 뜻을 입력하세요" aria-label="Useraddr"
+                       aria-describedby="basic-addon1">
+            </div>
+
+
+            <div style="text-align:center;">
+                <button type="button" class="btn btn-secondary" onclick="ccclick()"> 입력하기
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <table id="foo-table" class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>영어단어</th>
+                    <th>뜻</th>
+                </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
